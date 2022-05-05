@@ -56,18 +56,6 @@ df = shuffle(df)
 df.head()
 
 
-true = pd.read_csv(path + '/True.csv')
-fake = pd.read_csv(path + "/Fake.csv")
-
-true["target"] = 1
-fake["target"] = 0
-
-df = pd.concat([true,fake])
-
-df = shuffle(df)
-df.head()
-
-
 def text_cleaning(line_from_column):
     # This function takes in a string, not a list or an array for the arg line_from_column
     
