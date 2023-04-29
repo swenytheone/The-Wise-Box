@@ -1,4 +1,10 @@
 # The-Wise-Box
 
-Wise Box is a project and a web-app that using NLP, and a mix of deep learning and machine learning to predict if an article is True or if it is a Fake news.
+Wise box is a web application coded in python with the streamlit library
 
+It allowed me to become more competent in NLP, ML and DL. 
+
+Its goal is to detect fake news through the use of NLP, ML and DL. 
+
+The algorithm has been trained on a part of the FNC data set which is unfortunately not up to date with the news. 
+https://github.com/FakeNewsChallenge
