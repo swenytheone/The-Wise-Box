@@ -1,3 +1,4 @@
+""" Import necessary packages and libraries """
 import pandas as pd
 %matplotlib inline
 %load_ext autoreload
@@ -26,10 +27,10 @@ import numpy as np
 
 csv.field_size_limit(500 * 1024 * 1024)
 
+""" Define file paths for different datasets """
+
 path = '/Users/swen/Downloads/FakeNewsCorpus_1_0/'
-
 path_news_csv = path + 'news_cleaned_2018_02_13-1.csv'
-
 path = '/content/drive/MyDrive/ColabNotebooks/'
 path_news_preprocessed = path + 'news_cleaned_2018_02_13.preprocessed.jsonl'
 path_news_shuffled = '/content/drive/MyDrive/ColabNotebooks/news_cleaned_2018_02_13.preprocessed.shuffled.jsonl'
@@ -38,12 +39,17 @@ path_news_test = '/content/drive/MyDrive/ColabNotebooks/news_cleaned_2018_02_13.
 path_news_val = '/content/drive/MyDrive/ColabNotebooks/news_cleaned_2018_02_13.preprocessed.shuffled.val.jsonl'
 path_news_embedded =  path + 'news_cleaned_2018_02_13.embedded.jsonl'
 
+""" Read a chunk of data from the news CSV file, shuffle it, and print the column names """
+
 for df_news_chunk in pd.read_csv(path_news_csv, chunksize=100000):
     df_news_chunk = shuffle(df_news_chunk)
     print(df_news_chunk)
     break
 
 df_news_chunk.columns
+
+""" Define a news generator function to yield news article IDs, titles, contents, and labels (0 for fake/unreliable, 1 for reliable) """
+
 
 def news_generator():
     with tqdm() as progress:
@@ -52,7 +58,6 @@ def news_generator():
             df_news_chunk_filtered = df_news_chunk[news_filter]
             for row in df_news_chunk_filtered.itertuples():
                 label = 1 if row.type == 'reliable' else 0
-
                 progress.update()
                 yield int(row.id), '%s %s' % (row.title, row.content), label
                 
@@ -68,6 +73,7 @@ with tqdm() as progress:
     for k in range(5000000):
         progress.update()
 
+""" Preprocess the news generator output using Gensim's preprocess_string function to tokenize and remove stop words from the text content """
 
 # changement ici de multiprocessing en multiprocess
 def _preprocess_string(news):
@@ -81,6 +87,8 @@ def news_preprocessed_generator():
         for _id, con, label in pool.imap(_preprocess_string, news_generator(), chunksize=1000):
             yield _id, con, label, missing_words
 
+""" Write the preprocessed news to a JSONL file and shuffle it """        
+
 all_missing_words = {}
 with open(path_news_preprocessed, 'w') as out_news_embedded:
     for _id, con, label, missing_words in news_preprocessed_generator():
@@ -89,6 +97,8 @@ with open(path_news_preprocessed, 'w') as out_news_embedded:
         }) + '\n')
         all_missing_words.update(missing_words)
 
+""" Split the shuffled data into training, validation, and test sets and write them to separate files """
+        
 !shuf /content/drive/MyDrive/ColabNotebooks/news_cleaned_2018_02_13.preprocessed.jsonl > \
       /content/drive/MyDrive/ColabNotebooks/news_cleaned_2018_02_13.preprocessed.shuffled.jsonl
       
