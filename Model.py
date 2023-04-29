@@ -1,3 +1,4 @@
+""" On importe les libraries qui nous permettrons de mener à bien le projet """
 #Basic libraries
 import pandas as pd 
 import numpy as np 
@@ -88,7 +89,7 @@ def normalize(data):
 
 def draw_n_gram(string,i):
     """
-    une fonction qui permet 
+    une fonction qui permet de générer un diagramme à barres des n-grammes (séquences de n mots) les plus courants dans un texte donné. 
     """
     n_gram = (pd.Series(nltk.ngrams(string, i)).value_counts())[:15]
     n_gram_df=pd.DataFrame(n_gram)
@@ -114,12 +115,15 @@ def remove_stopwords_and_lemmatization(text):
     return " ".join(final_text)
 
 def cleaning(text):
+   """ On active la lemmatization sur un texte/date donné """
+  
   text = remove_stopwords_and_lemmatization(text)
   return text
 
 
 @st.cache
 def lstm_fake_news():
+ """ définit un modèle de mémoire à long terme (LSTM) pour catégoriser les articles de presse comme vrais ou faux """
     model = tf.keras.Sequential([
     tf.keras.layers.Embedding(max_vocab, output_dim=embed_size, input_length= max_len, trainable = False),
     tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(units = 128,  return_sequences=True)),
@@ -135,6 +139,7 @@ def lstm_fake_news():
     return model
     
 def get_pred():
+ """ La fonction get_pred évalue le modèle et effectue des prédictions binaires sur la base d'un ensemble de tests donné """
     model.evaluate(X_test, y_test)
     pred = model.predict(X_test)
     binary_predictions = []
